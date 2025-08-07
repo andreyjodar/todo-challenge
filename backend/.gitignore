@@ -1,0 +1,135 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Arquivo .gitignore genérico para projetos Java com Maven e Spring Boot.
+# Compatível com IntelliJ, Eclipse e VS Code.
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+### Arquivos de Log e Temporários ###
+*.log
+*.tmp
+*.temp
+
+### Artefatos de Build do Maven ###
+# Diretório onde o Maven armazena os arquivos compilados e pacotes.
+target/
+
+# Arquivos de log do resolvedor de dependências do Maven
+*.md.log
+
+### Artefatos de Build do Gradle ###
+# Útil caso o projeto também use ou migre para o Gradle.
+.gradle
+build/
+!build/cache/
+out/
+
+### Arquivos Gerados pelo Java ###
+# Classes Java compiladas
+*.class
+
+# Arquivos de pacotes Java
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Arquivos de despejo de memória da JVM em caso de falha
+hs_err_pid*
+replay_pid*
+
+### Configurações de IDE - IntelliJ IDEA ###
+# Diretório de configurações do projeto
+.idea/
+
+# Arquivos de workspace do usuário. Contêm configurações locais.
+!.idea/copyright/
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/vcs.xml
+!.idea/encodings.xml
+!.idea/compiler.xml
+workspace.xml
+tasks.xml
+
+# Arquivos sensíveis ou que mudam com frequência
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+.idea/gradle.xml
+.idea/libraries
+
+# Outros arquivos do IntelliJ
+*.iws
+*.iml
+*.ipr
+
+### Configurações de IDE - Eclipse ###
+.project
+.classpath
+.settings/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# Arquivos da ferramenta de metadados do Eclipse
+.metadata
+
+# Arquivos gerados pela integração do Maven com o Eclipse (m2e)
+.mvn/
+.classpath.bak
+.project.bak
+.settings.bak
+
+### Configurações de IDE - Visual Studio Code ###
+.vscode/
+# Exceto arquivos que você queira compartilhar com a equipe
+!/.vscode/settings.json
+!/.vscode/tasks.json
+!/.vscode/launch.json
+!/.vscode/extensions.json
+*.code-workspace
+
+### Configurações de IDE - NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+.nb-gradle/
+
+### Arquivos do Sistema Operacional ###
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails (Windows)
+Thumbs.db
+ehthumbs.db
+
+# Lixeira
+.Trash-*
+
+### Arquivos de Configuração Sensíveis ###
+# Arquivos de propriedades que podem conter senhas ou chaves de API.
+# É uma boa prática usar variáveis de ambiente ou um sistema de gerenciamento de segredos.
+application-local.properties
+application-dev.properties
+application-prod.properties
+
+### Outros ###
+# Arquivos de dependências do Node.js, caso use ferramentas de frontend
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Relatórios de cobertura de testes
+/coverage
+/jacoco
+/pit-reports
