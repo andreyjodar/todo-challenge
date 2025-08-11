@@ -1,4 +1,4 @@
-package com.github.andreyjodar.backend.enums;
+package com.github.andreyjodar.backend.models.enums;
 
 public enum TaskStatus {
     TODO, 

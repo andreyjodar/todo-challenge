@@ -1,11 +1,11 @@
-package com.github.andreyjodar.backend.models;
+package com.github.andreyjodar.backend.models.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.andreyjodar.backend.enums.TaskPriority;
-import com.github.andreyjodar.backend.enums.TaskStatus;
+import com.github.andreyjodar.backend.models.enums.TaskPriority;
+import com.github.andreyjodar.backend.models.enums.TaskStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,29 +19,34 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+@ToString(onlyExplicitlyIncluded = true)
 @Table(name = "task")
-public class Task {
+public class Task extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private Long id;
 
     @NotBlank(message = "{validation.tasktitle.notblank}")
     @Column(nullable = false)
+    @ToString.Include
     private String title;
 
-    @NotBlank(message = "{validation.taskdescription.notblank}")
     @Column(nullable = false)
     private String description;
 
@@ -60,24 +65,11 @@ public class Task {
     @NotNull(message = "{validation.taskauthor.notnull}")
     private User author;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Setter(AccessLevel.NONE)
     private List<TaskLabel> taskLabels = new ArrayList<>();
 
     @NotNull(message = "{validation.datetime.notnull}")
-    @PastOrPresent(message = "{validation.datetime.notfuture}")
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @PastOrPresent(message = "{validation.datetime.notfuture}")
+    @Column(nullable = false)
     private LocalDateTime deadline;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-
-        if (this.status == null) {
-            this.status = TaskStatus.TODO;
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package com.github.andreyjodar.backend.models;
+package com.github.andreyjodar.backend.models.dtos;
 
 import java.time.LocalDateTime;
 import java.util.List;
