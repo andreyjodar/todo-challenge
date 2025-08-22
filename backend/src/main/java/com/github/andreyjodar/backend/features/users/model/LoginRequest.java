@@ -7,8 +7,13 @@ import lombok.Data;
 
 @Data
 public class LoginRequest {
-    @NotBlank @Email
+    
+    @NotBlank(message = "{validation.useremail.notblank}") 
+    @Email(message = "{validation.useremail.notvalid}")
     private String email;
-    @NotBlank @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$")
+
+    @NotBlank(message = "{validation.userpassw.notblank}")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$",
+    message = "{validation.userpassw.notvalid}")
     private String password;
 }

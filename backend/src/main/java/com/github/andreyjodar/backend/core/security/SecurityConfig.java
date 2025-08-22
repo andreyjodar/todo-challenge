@@ -47,12 +47,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/tasks/**").permitAll()
-                .requestMatchers("/users/**").permitAll()
-                .requestMatchers("/labels/**").permitAll()
-                .requestMatchers("/roles/**").hasRole("ADMIN")
-                /* .requestMatchers("/api/pessoa/**").hasRole("ADMIN") */
-                    .anyRequest().authenticated()
+                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

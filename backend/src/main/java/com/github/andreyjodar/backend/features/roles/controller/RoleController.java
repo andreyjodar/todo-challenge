@@ -1,9 +1,10 @@
 package com.github.andreyjodar.backend.features.roles.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,9 +21,11 @@ public class RoleController {
     private RoleService roleService;
     
     @GetMapping
-    public ResponseEntity<List<RoleResponse>> findAll() {
-        List<Role> roles = roleService.findAll();
-        List<RoleResponse> rolesResponse = roles.stream().map(roleService::fromEntity).toList();
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<Page<RoleResponse>> findAll(Pageable pageable) {
+        Page<Role> roles = roleService.findAll(pageable);
+        Page<RoleResponse> rolesResponse = roles.map(roleService::fromEntity);
         return ResponseEntity.ok(rolesResponse);
     }
+    
 }

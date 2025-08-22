@@ -1,6 +1,8 @@
 package com.github.andreyjodar.backend.features.tasks.service;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.github.andreyjodar.backend.core.exceptions.NotFoundException;
+import com.github.andreyjodar.backend.features.labels.model.Label;
 import com.github.andreyjodar.backend.features.labels.service.LabelService;
 import com.github.andreyjodar.backend.features.tasks.model.Task;
 import com.github.andreyjodar.backend.features.tasks.model.TaskRequest;
@@ -39,8 +42,8 @@ public class TaskService {
 
     public Task update(Task task) {
         Task taskDb = findById(task.getId());
+        taskDb.setStatus(task.getStatus());
         if(task.getStatus() == TaskStatus.DONE) {
-            taskDb.setStatus(task.getStatus());
             taskDb.setEndDate(LocalDateTime.now());
         }
         taskDb.setTitle(task.getTitle());
@@ -56,7 +59,7 @@ public class TaskService {
 
     public Task findById(Long id) {
         return taskRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(messageSource.getMessage("task.notfound",
+            .orElseThrow(() -> new NotFoundException(messageSource.getMessage("exception.task.notfound",
                 new Object[] { id }, LocaleContextHolder.getLocale())));
     }
 
@@ -89,7 +92,11 @@ public class TaskService {
         if(taskRequest.getStatus() != null) {
             task.setStatus(TaskStatus.valueOf(taskRequest.getStatus().toUpperCase()));
         }
-        // pensar no carregamento das labels
+
+        Set<Label> labels = taskRequest.getLabelsId().stream()
+            .map(labelId -> labelService.findById(labelId)).collect(Collectors.toSet());
+        
+        task.setLabels(labels);
         return task;
     }
 }

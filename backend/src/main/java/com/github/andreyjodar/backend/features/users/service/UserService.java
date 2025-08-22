@@ -1,5 +1,8 @@
 package com.github.andreyjodar.backend.features.users.service;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Lazy;
@@ -13,9 +16,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import com.github.andreyjodar.backend.core.exceptions.BusinessException;
 import com.github.andreyjodar.backend.core.exceptions.NotFoundException;
+import com.github.andreyjodar.backend.features.roles.model.Role;
 import com.github.andreyjodar.backend.features.roles.service.RoleService;
 import com.github.andreyjodar.backend.features.users.model.User;
+import com.github.andreyjodar.backend.features.users.model.UserRequest;
 import com.github.andreyjodar.backend.features.users.model.UserResponse;
 import com.github.andreyjodar.backend.features.users.repository.UserRepository;
 import com.github.andreyjodar.backend.shared.service.EmailService;
@@ -39,22 +45,36 @@ public class UserService implements UserDetailsService {
     PasswordEncoder passwordEncoder;
 
     public User create(User user) {
-        User userInsert = userRepository.save(user);
-        sendSuccessEmail(userInsert);
-        return userInsert;
+        if(userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new BusinessException(messageSource.getMessage("exception.user.existemail",
+                new Object[] { user.getEmail() }, LocaleContextHolder.getLocale()));
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User userDb = userRepository.save(user);
+        sendSuccessEmail(userDb);
+        return userDb;
     }
 
     private void sendSuccessEmail(User user) {
         Context context = new Context();
         context.setVariable("name", user.getName());
+        context.setVariable("createdAt", user.getCreatedAt());
         emailService.sendTemplatedEmail(user.getEmail(), "Cadastro Sucesso", context, "cadastroSucesso");
     }
 
     public User update(User user) {
         User userDb = findById(user.getId());
+        if(userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new BusinessException(messageSource.getMessage("exception.user.existemail",
+                new Object[] { user.getEmail() }, LocaleContextHolder.getLocale()));
+        }
         userDb.setName(user.getName());
         userDb.setEmail(user.getEmail());
-        return userRepository.save(userDb);
+        userDb.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDb.setRoles(user.getRoles());
+        userDb = userRepository.save(userDb);
+        sendSuccessEmail(userDb);
+        return userDb;
     }
 
     public void delete(Long id) {
@@ -64,14 +84,18 @@ public class UserService implements UserDetailsService {
 
     public User findById(Long id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(messageSource.getMessage("user.notfound",
+            .orElseThrow(() -> new NotFoundException(messageSource.getMessage("exception.user.notfound",
                 new Object[] { id }, LocaleContextHolder.getLocale())));
     }
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(messageSource.getMessage("user.notfound",
+            .orElseThrow(() -> new NotFoundException(messageSource.getMessage("exception.user.notfound",
                 new Object[] { email }, LocaleContextHolder.getLocale())));
+    }
+
+    public Page<User> findByRoleName(String roleName, Pageable pageable) {
+        return userRepository.findByRoleName(roleName, pageable);
     }
 
     public Page<User> findAll(Pageable pageable) {
@@ -89,9 +113,23 @@ public class UserService implements UserDetailsService {
         return userResponse;
     }
 
+    public User fromDto(UserRequest userRequest) {
+        User user = new User();
+        user.setEmail(userRequest.getEmail());
+        user.setName(userRequest.getName());
+        user.setPassword(userRequest.getPassword());
+
+        Set<Role> roles = userRequest.getRoles().stream()
+            .map(roleName -> roleService.findByName(roleName)).collect(Collectors.toSet());
+
+        user.setRoles(roles);
+        return user;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
-            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+            .orElseThrow(() -> new UsernameNotFoundException(messageSource.getMessage("exception.user.notfound",
+                new Object[] { username }, LocaleContextHolder.getLocale())));
     }
 }

@@ -51,7 +51,6 @@ public class Task extends BaseEntity {
     @Column(nullable = false)
     private LocalDate deadline;
 
-    @NotNull 
     @Column(name = "end_date", nullable = true)
     private LocalDateTime endDate;
 }

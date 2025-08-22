@@ -1,9 +1,10 @@
 package com.github.andreyjodar.backend.features.labels.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,14 +29,21 @@ public class LabelController {
     LabelService labelService;
 
     @PostMapping
-    public ResponseEntity<LabelResponse> create(@Valid @RequestBody LabelRequest labelRequest) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<LabelResponse> create(
+            @Valid @RequestBody LabelRequest labelRequest) {
+
         Label label = new Label(labelRequest.getName(), labelRequest.getDescription());
         label = labelService.create(label);
         return ResponseEntity.ok(labelService.fromEntity(label));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LabelResponse> update(@PathVariable("id") Long id, @Valid @RequestBody LabelRequest labelRequest) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<LabelResponse> update(
+            @PathVariable("id") Long id, 
+            @Valid @RequestBody LabelRequest labelRequest) {
+
         Label label = new Label(labelRequest.getName(), labelRequest.getDescription());
         label.setId(id);
         label = labelService.update(label);
@@ -43,21 +51,29 @@ public class LabelController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> delete(
+            @PathVariable("id") Long id) {
+
         labelService.delete(id);
-        return ResponseEntity.ok("Label was deleted");
+        return ResponseEntity.ok("Label with id:" + id + " deleted succsessfully");
     }
 
     @GetMapping
-    public ResponseEntity<List<LabelResponse>> findAll() {
-        List<Label> labels = labelService.findAll();
-        List<LabelResponse> labelsResponse = labels.stream()
-            .map(labelService::fromEntity).toList();
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<Page<LabelResponse>> findAll(
+            Pageable pageable) {
+
+        Page<Label> labels = labelService.findAll(pageable);
+        Page<LabelResponse> labelsResponse = labels.map(labelService::fromEntity);
         return ResponseEntity.ok(labelsResponse);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LabelResponse> findById(@PathVariable("id") Long id) {
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<LabelResponse> findById(
+            @PathVariable("id") Long id) {
+                
         Label label = labelService.findById(id);
         LabelResponse labelResponse = labelService.fromEntity(label); 
         return ResponseEntity.ok(labelResponse);

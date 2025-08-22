@@ -6,8 +6,10 @@ import lombok.Data;
 
 @Data
 public class LabelRequest {
-    @NotBlank @Size(max = 30)
+    @NotBlank(message = "{validation.labelname.notblank}") 
+    @Size(max = 30, message = "{validation.labelname.maxsize}")
     private String name;
-    @NotBlank @Size(max = 150)
+    @NotBlank(message = "{validation.labeldesc.notblank}")
+    @Size(max = 150, message = "{validation.labeldesc.maxsize}")
     private String description;
 }
