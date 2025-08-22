@@ -1,0 +1,95 @@
+package com.github.andreyjodar.backend.features.tasks.service;
+
+import java.time.LocalDateTime;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.github.andreyjodar.backend.core.exceptions.NotFoundException;
+import com.github.andreyjodar.backend.features.labels.service.LabelService;
+import com.github.andreyjodar.backend.features.tasks.model.Task;
+import com.github.andreyjodar.backend.features.tasks.model.TaskRequest;
+import com.github.andreyjodar.backend.features.tasks.model.TaskResponse;
+import com.github.andreyjodar.backend.features.tasks.model.TaskStatus;
+import com.github.andreyjodar.backend.features.tasks.repository.TaskRepository;
+import com.github.andreyjodar.backend.features.users.model.User;
+import com.github.andreyjodar.backend.features.users.service.UserService;
+
+@Service
+public class TaskService {
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private LabelService labelService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private MessageSource messageSource;
+
+    public Task create(Task task) {
+        return taskRepository.save(task);
+    }
+
+    public Task update(Task task) {
+        Task taskDb = findById(task.getId());
+        if(task.getStatus() == TaskStatus.DONE) {
+            taskDb.setStatus(task.getStatus());
+            taskDb.setEndDate(LocalDateTime.now());
+        }
+        taskDb.setTitle(task.getTitle());
+        taskDb.setDescription(task.getDescription());
+        taskDb.setDeadline(task.getDeadline());
+        return taskRepository.save(taskDb);
+    }
+
+    public void delete(Long id) {
+        Task taskDb = findById(id);
+        taskRepository.delete(taskDb);
+    }
+
+    public Task findById(Long id) {
+        return taskRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException(messageSource.getMessage("task.notfound",
+                new Object[] { id }, LocaleContextHolder.getLocale())));
+    }
+
+    public Page<Task> findByAuthor(User user, Pageable pageable) {
+        return taskRepository.findByAuthor(user, pageable);
+    }
+
+    public Page<Task> findAll(Pageable pageable) {
+        return taskRepository.findAll(pageable);
+    }
+
+    public TaskResponse fromEntity(Task task) {
+        TaskResponse taskResponse = new TaskResponse();
+        taskResponse.setId(task.getId());
+        taskResponse.setTitle(task.getTitle());
+        taskResponse.setDescription(task.getDescription());
+        taskResponse.setStatus(task.getStatus().toString());
+        taskResponse.setAuthor(userService.fromEntity(task.getAuthor()));
+        taskResponse.setLabels(task.getLabels().stream()
+            .map(labelService::fromEntity).collect(java.util.stream.Collectors.toSet()));
+        taskResponse.setCreatedAt(task.getCreatedAt());
+        return taskResponse;
+    }
+
+    public Task fromDto(TaskRequest taskRequest) {
+        Task task = new Task();
+        task.setTitle(taskRequest.getTitle());
+        task.setDescription(taskRequest.getDescription());
+        task.setDeadline(taskRequest.getDeadline());
+        if(taskRequest.getStatus() != null) {
+            task.setStatus(TaskStatus.valueOf(taskRequest.getStatus().toUpperCase()));
+        }
+        // pensar no carregamento das labels
+        return task;
+    }
+}
