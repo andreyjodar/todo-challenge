@@ -49,17 +49,19 @@ public class UserService implements UserDetailsService {
             throw new BusinessException(messageSource.getMessage("exception.user.existemail",
                 new Object[] { user.getEmail() }, LocaleContextHolder.getLocale()));
         }
+        String password = user.getPassword();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User userDb = userRepository.save(user);
-        sendSuccessEmail(userDb);
+        sendSuccessEmail(userDb, password);
         return userDb;
     }
 
-    private void sendSuccessEmail(User user) {
+    private void sendSuccessEmail(User user, String password) {
         Context context = new Context();
         context.setVariable("name", user.getName());
-        context.setVariable("createdAt", user.getCreatedAt());
-        emailService.sendTemplatedEmail(user.getEmail(), "Cadastro Sucesso", context, "cadastroSucesso");
+        context.setVariable("email", user.getEmail());
+        context.setVariable("password", password);
+        emailService.sendTemplatedEmail(user.getEmail(), "Successfully Registered in Web Task Management System", context, "success-usercreate");
     }
 
     public User update(User user) {
@@ -70,10 +72,11 @@ public class UserService implements UserDetailsService {
         }
         userDb.setName(user.getName());
         userDb.setEmail(user.getEmail());
+        String password = user.getPassword();
         userDb.setPassword(passwordEncoder.encode(user.getPassword()));
         userDb.setRoles(user.getRoles());
         userDb = userRepository.save(userDb);
-        sendSuccessEmail(userDb);
+        sendSuccessEmail(userDb, password);
         return userDb;
     }
 
