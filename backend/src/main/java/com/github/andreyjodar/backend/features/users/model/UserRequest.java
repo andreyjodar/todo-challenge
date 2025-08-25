@@ -26,5 +26,5 @@ public class UserRequest {
     private String password;
     
     @NotEmpty(message = "{validation.userroles.notempty}")
-    private Set<String> roles;
+    private Set<Long> rolesId;
 }

@@ -14,7 +14,7 @@ import com.github.andreyjodar.backend.shared.service.AuthenticationService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
     private AuthenticationService authenticationService;

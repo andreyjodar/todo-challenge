@@ -27,7 +27,7 @@ import com.github.andreyjodar.backend.features.users.model.User;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/tasks")
+@RequestMapping("/api/tasks")
 public class TaskController {
     
     @Autowired
@@ -45,7 +45,7 @@ public class TaskController {
         Task task = taskService.fromDto(taskRequest);
         task.setAuthor(principal);
         Task taskDb = taskService.create(task);
-        return ResponseEntity.ok(taskService.fromEntity(taskDb));
+        return ResponseEntity.ok(TaskResponse.fromEntity(taskDb));
     }
 
     @GetMapping
@@ -60,7 +60,7 @@ public class TaskController {
         } else {
             tasks = taskService.findByAuthor(principal, pageable);
         }
-        Page<TaskResponse> tasksResponse = tasks.map(taskService::fromEntity);
+        Page<TaskResponse> tasksResponse = tasks.map(TaskResponse::fromEntity);
         return ResponseEntity.ok(tasksResponse);
     }
 
@@ -73,12 +73,13 @@ public class TaskController {
 
         Task task = taskService.fromDto(taskRequest);
         Task taskDb = taskService.findById(id);
+
         if(!isAdmin(principal) && !taskDb.getAuthor().getId().equals(principal.getId())) {
             throw new ForbiddenException(messageSource.getMessage("exception.userrole.unauthorized",
                 new Object[] { principal.getAuthorities() }, LocaleContextHolder.getLocale()));
         }
         task.setId(id);
-        return ResponseEntity.ok(taskService.fromEntity(task));
+        return ResponseEntity.ok(TaskResponse.fromEntity(task));
     }
 
     @DeleteMapping("/{id}")
@@ -107,7 +108,7 @@ public class TaskController {
             throw new ForbiddenException(messageSource.getMessage("exception.userrole.unauthorized",
                 new Object[] { principal.getAuthorities() }, LocaleContextHolder.getLocale()));
         }
-        return ResponseEntity.ok(taskService.fromEntity(task));
+        return ResponseEntity.ok(TaskResponse.fromEntity(task));
     }
 
     private boolean isAdmin(User principal) {

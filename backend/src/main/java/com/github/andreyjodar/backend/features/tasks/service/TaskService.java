@@ -16,11 +16,9 @@ import com.github.andreyjodar.backend.features.labels.model.Label;
 import com.github.andreyjodar.backend.features.labels.service.LabelService;
 import com.github.andreyjodar.backend.features.tasks.model.Task;
 import com.github.andreyjodar.backend.features.tasks.model.TaskRequest;
-import com.github.andreyjodar.backend.features.tasks.model.TaskResponse;
 import com.github.andreyjodar.backend.features.tasks.model.TaskStatus;
 import com.github.andreyjodar.backend.features.tasks.repository.TaskRepository;
 import com.github.andreyjodar.backend.features.users.model.User;
-import com.github.andreyjodar.backend.features.users.service.UserService;
 
 @Service
 public class TaskService {
@@ -29,9 +27,6 @@ public class TaskService {
 
     @Autowired
     private LabelService labelService;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private MessageSource messageSource;
@@ -69,19 +64,6 @@ public class TaskService {
 
     public Page<Task> findAll(Pageable pageable) {
         return taskRepository.findAll(pageable);
-    }
-
-    public TaskResponse fromEntity(Task task) {
-        TaskResponse taskResponse = new TaskResponse();
-        taskResponse.setId(task.getId());
-        taskResponse.setTitle(task.getTitle());
-        taskResponse.setDescription(task.getDescription());
-        taskResponse.setStatus(task.getStatus().toString());
-        taskResponse.setAuthor(userService.fromEntity(task.getAuthor()));
-        taskResponse.setLabels(task.getLabels().stream()
-            .map(labelService::fromEntity).collect(java.util.stream.Collectors.toSet()));
-        taskResponse.setCreatedAt(task.getCreatedAt());
-        return taskResponse;
     }
 
     public Task fromDto(TaskRequest taskRequest) {

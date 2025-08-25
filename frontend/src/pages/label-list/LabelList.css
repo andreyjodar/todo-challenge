@@ -1,0 +1,44 @@
+.labellist-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    margin: 0 auto;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    align-items: center;
+    height: 140vh;
+    gap: 1.2rem;
+    background-color: #f2f2f2;
+}
+
+.labellist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    width: 80%;
+}
+
+.cardlabel-container {
+    display: grid;
+    background: linear-gradient(90deg, #FF005C, #A259FF);
+    border-radius: 12px;
+    padding: 10px;
+    max-width: 1400px;
+    width: 80%;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.p-card-label {
+    max-width: 340px;
+    width: 100%; 
+}
+
+.action-container {
+    display: flex;
+}
+
+.nolabels p {
+    color: #f2f2f2;
+}

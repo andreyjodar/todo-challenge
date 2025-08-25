@@ -10,4 +10,13 @@ public class LabelResponse {
     private String name;
     private String description;
     private LocalDateTime createdAt;
+
+    public static LabelResponse fromEntity(Label label) {
+        LabelResponse dto = new LabelResponse();
+        dto.setId(label.getId());
+        dto.setName(label.getName());
+        dto.setDescription(label.getDescription());
+        dto.setCreatedAt(label.getCreatedAt());
+        return dto;
+    }
 }

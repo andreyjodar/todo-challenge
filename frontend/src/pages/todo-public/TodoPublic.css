@@ -1,0 +1,31 @@
+.todo-public-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 32px;
+    height: 120vh;
+    background: linear-gradient(90deg, #FF005C, #A259FF);
+}
+
+.highlight-container{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 800px;
+    width: 80%;
+}
+
+.title-highlight{   
+    color: #ffffff;
+    font-size: 8rem;
+    margin: 0;
+}
+
+.subtitle-highlight{
+    color: #f2f2f2;
+    font-size: 2rem;
+    margin: 0;
+}

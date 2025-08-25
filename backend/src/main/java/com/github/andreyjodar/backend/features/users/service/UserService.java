@@ -22,7 +22,6 @@ import com.github.andreyjodar.backend.features.roles.model.Role;
 import com.github.andreyjodar.backend.features.roles.service.RoleService;
 import com.github.andreyjodar.backend.features.users.model.User;
 import com.github.andreyjodar.backend.features.users.model.UserRequest;
-import com.github.andreyjodar.backend.features.users.model.UserResponse;
 import com.github.andreyjodar.backend.features.users.repository.UserRepository;
 import com.github.andreyjodar.backend.shared.service.EmailService;
 
@@ -105,25 +104,14 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll(pageable);
     }
 
-    public UserResponse fromEntity(User user) {
-        UserResponse userResponse = new UserResponse();
-        userResponse.setId(user.getId());
-        userResponse.setName(user.getName());
-        userResponse.setEmail(user.getEmail());
-        userResponse.setCreatedAt(user.getCreatedAt());
-        userResponse.setRoles(user.getRoles().stream()
-            .map(roleService::fromEntity).collect(java.util.stream.Collectors.toSet()));
-        return userResponse;
-    }
-
     public User fromDto(UserRequest userRequest) {
         User user = new User();
         user.setEmail(userRequest.getEmail());
         user.setName(userRequest.getName());
         user.setPassword(userRequest.getPassword());
 
-        Set<Role> roles = userRequest.getRoles().stream()
-            .map(roleName -> roleService.findByName(roleName)).collect(Collectors.toSet());
+        Set<Role> roles = userRequest.getRolesId().stream()
+            .map(roleId -> roleService.findById(roleId)).collect(Collectors.toSet());
 
         user.setRoles(roles);
         return user;

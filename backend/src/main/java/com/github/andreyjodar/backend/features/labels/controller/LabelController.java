@@ -22,7 +22,7 @@ import com.github.andreyjodar.backend.features.labels.service.LabelService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/labels")
+@RequestMapping("/api/labels")
 public class LabelController {
     
     @Autowired
@@ -35,7 +35,7 @@ public class LabelController {
 
         Label label = new Label(labelRequest.getName(), labelRequest.getDescription());
         label = labelService.create(label);
-        return ResponseEntity.ok(labelService.fromEntity(label));
+        return ResponseEntity.ok(LabelResponse.fromEntity(label));
     }
 
     @PutMapping("/{id}")
@@ -47,7 +47,7 @@ public class LabelController {
         Label label = new Label(labelRequest.getName(), labelRequest.getDescription());
         label.setId(id);
         label = labelService.update(label);
-        return ResponseEntity.ok(labelService.fromEntity(label));
+        return ResponseEntity.ok(LabelResponse.fromEntity(label));
     }
 
     @DeleteMapping("/{id}")
@@ -65,7 +65,7 @@ public class LabelController {
             Pageable pageable) {
 
         Page<Label> labels = labelService.findAll(pageable);
-        Page<LabelResponse> labelsResponse = labels.map(labelService::fromEntity);
+        Page<LabelResponse> labelsResponse = labels.map(LabelResponse::fromEntity);
         return ResponseEntity.ok(labelsResponse);
     }
 
@@ -75,7 +75,7 @@ public class LabelController {
             @PathVariable("id") Long id) {
                 
         Label label = labelService.findById(id);
-        LabelResponse labelResponse = labelService.fromEntity(label); 
+        LabelResponse labelResponse = LabelResponse.fromEntity(label); 
         return ResponseEntity.ok(labelResponse);
     }
 

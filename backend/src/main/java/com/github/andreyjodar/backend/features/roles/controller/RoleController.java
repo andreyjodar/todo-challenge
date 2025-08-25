@@ -14,7 +14,7 @@ import com.github.andreyjodar.backend.features.roles.model.RoleResponse;
 import com.github.andreyjodar.backend.features.roles.service.RoleService;
 
 @RestController
-@RequestMapping("/roles")
+@RequestMapping("/api/roles")
 public class RoleController {
 
     @Autowired
@@ -22,9 +22,11 @@ public class RoleController {
     
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<Page<RoleResponse>> findAll(Pageable pageable) {
+    public ResponseEntity<Page<RoleResponse>> findAll(
+            Pageable pageable) {
+
         Page<Role> roles = roleService.findAll(pageable);
-        Page<RoleResponse> rolesResponse = roles.map(roleService::fromEntity);
+        Page<RoleResponse> rolesResponse = roles.map(RoleResponse::fromEntity);
         return ResponseEntity.ok(rolesResponse);
     }
     

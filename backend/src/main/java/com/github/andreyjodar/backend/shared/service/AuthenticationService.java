@@ -29,7 +29,7 @@ public class AuthenticationService {
             .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
             User userDb = userService.findByEmail(loginRequest.getEmail());
             String token = jwtService.generateToken(authentication.getName());
-            UserResponse userResponse = userService.fromEntity(userDb);
+            UserResponse userResponse = UserResponse.fromEntity(userDb);
             LoginResponse loginResponse = new LoginResponse(token, userResponse);
         return loginResponse;
     }

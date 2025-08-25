@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.github.andreyjodar.backend.core.exceptions.BusinessException;
 import com.github.andreyjodar.backend.core.exceptions.NotFoundException;
 import com.github.andreyjodar.backend.features.labels.model.Label;
-import com.github.andreyjodar.backend.features.labels.model.LabelResponse;
 import com.github.andreyjodar.backend.features.labels.repository.LabelRepository;
 
 @Service
@@ -59,14 +58,5 @@ public class LabelService {
 
     public Page<Label> findAll(Pageable pageable) {
         return labelRepository.findAll(pageable);
-    }
-
-    public LabelResponse fromEntity(Label label) {
-        LabelResponse labelResponse = new LabelResponse();
-        labelResponse.setId(label.getId());
-        labelResponse.setName(label.getName());
-        labelResponse.setDescription(label.getDescription());
-        labelResponse.setCreatedAt(label.getCreatedAt());
-        return labelResponse;
     }
 }

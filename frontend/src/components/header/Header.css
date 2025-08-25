@@ -1,0 +1,14 @@
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    width: 90%;
+    margin: 0 auto;    
+}
+
+.auth-admin {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+}

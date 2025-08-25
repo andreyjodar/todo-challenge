@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.github.andreyjodar.backend.core.exceptions.NotFoundException;
 import com.github.andreyjodar.backend.features.roles.model.Role;
-import com.github.andreyjodar.backend.features.roles.model.RoleResponse;
 import com.github.andreyjodar.backend.features.roles.repository.RoleRepository;
 
 @Service
@@ -31,11 +30,9 @@ public class RoleService {
                 new Object[] { roleName }, LocaleContextHolder.getLocale())));
     }
 
-    public RoleResponse fromEntity(Role role) {
-        RoleResponse roleResponse = new RoleResponse();
-        roleResponse.setId(role.getId());
-        roleResponse.setName(role.getName());
-        roleResponse.setCreatedAt(role.getCreatedAt());
-        return roleResponse;
+    public Role findById(Long id) {
+        return roleRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException(messageSource.getMessage("exception.role.notfound",
+                new Object[] { id }, LocaleContextHolder.getLocale())));
     }
 }

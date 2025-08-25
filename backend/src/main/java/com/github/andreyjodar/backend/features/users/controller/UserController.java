@@ -27,7 +27,7 @@ import com.github.andreyjodar.backend.features.users.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
     
     @Autowired
@@ -43,7 +43,7 @@ public class UserController {
 
         User user = userService.fromDto(userRequest);
         User userDb = userService.create(user);
-        return ResponseEntity.ok(userService.fromEntity(userDb));
+        return ResponseEntity.ok(UserResponse.fromEntity(userDb));
     }
 
     @GetMapping
@@ -52,7 +52,7 @@ public class UserController {
             Pageable pageable) {
 
         Page<User> users = userService.findAll(pageable);
-        Page<UserResponse> usersResponse = users.map(userService::fromEntity);
+        Page<UserResponse> usersResponse = users.map(UserResponse::fromEntity);
         return ResponseEntity.ok(usersResponse);
     }
 
@@ -69,7 +69,7 @@ public class UserController {
         }
         User user = userService.fromDto(userRequest);
         user.setId(id);
-        return ResponseEntity.ok(userService.fromEntity(user));
+        return ResponseEntity.ok(UserResponse.fromEntity(user));
     }
 
     @DeleteMapping("/{id}")
@@ -97,7 +97,7 @@ public class UserController {
                 new Object[] { principal.getAuthorities() }, LocaleContextHolder.getLocale()));
         }
         User user = userService.findById(id);
-        return ResponseEntity.ok(userService.fromEntity(user));
+        return ResponseEntity.ok(UserResponse.fromEntity(user));
     }
 
     @GetMapping("/by-role")
@@ -107,7 +107,7 @@ public class UserController {
             Pageable pageable) {
 
         Page<User> users = userService.findByRoleName(role, pageable);
-        Page<UserResponse> usersResponse = users.map(userService::fromEntity);
+        Page<UserResponse> usersResponse = users.map(UserResponse::fromEntity);
         return ResponseEntity.ok(usersResponse);
     }
 
